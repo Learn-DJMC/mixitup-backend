@@ -1,8 +1,12 @@
 class RecipesController < ApplicationController
 
     def create
-        recipe = Recipe.create!(recipe_params)
-        render json: recipe
+        recipe = Recipe.create(recipe_params)
+        if recipe.valid?
+            render json: recipe
+        else
+            render json: recipe.errors, status: 422
+        end
     end
 
     private
