@@ -263,7 +263,7 @@ RSpec.describe "Recipes", type: :request do
     it "doesnt update with a nonexistent id" do
       user = User.create(email: "test@example.com", username: "test", password: "password")
       recipe = Recipe.create(
-        title: "Recipe 1",
+          title: "Recipe 1",
           category: "default",
           dietary_restrictions: "default",
           rating: 0,
@@ -288,6 +288,34 @@ RSpec.describe "Recipes", type: :request do
       }
       patch "/recipes/#{recipe.id}", params: recipe_params
       expect(response).to have_http_status(422)
+    end
+  end
+
+  describe "DELETE /destroy" do
+    it "deletes a recipe" do
+    user = User.create(email: "test@example.com", username: "test", password: "password")
+    recipe = Recipe.create(
+      title: "Recipe 1",
+      category: "default",
+      dietary_restrictions: "default",
+      rating: 0,
+      description: "Default description",
+      ingredients: ["Ingredient 1", "Ingredient 2", "Ingredient 3"],
+      instructions: ["Step 1", "Step 2", "Step 3"],
+      image: "recipe1",
+      user_id: user.id
+      )
+
+      delete "/recipes/#{recipe.id}"
+      expect(response.status).to eq (200)
+      recipe = Recipe.all
+      expect(recipe).to be_empty
+    end
+    it "doesn't remove an recipe with an invalid ID" do
+      expect { delete "/recipes/invalid_id" }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+    it "doesn't remove an recipe with no ID" do
+      expect { delete "/recipes/"}.to raise_error(ActionController::RoutingError)
     end
   end
 end
