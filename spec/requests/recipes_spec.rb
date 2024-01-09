@@ -227,4 +227,67 @@ RSpec.describe "Recipes", type: :request do
     end
   end
 
+  describe "PATCH /update" do
+    it "updates a recipe" do
+      user = User.create(email: "test@example.com", username: "test", password: "password")
+      recipe = Recipe.create(
+        title: "Recipe 1",
+          category: "default",
+          dietary_restrictions: "default",
+          rating: 0,
+          description: "Default description",
+          ingredients: ["Ingredient 1", "Ingredient 2", "Ingredient 3"],
+          instructions: ["Step 1", "Step 2", "Step 3"],
+          image: "recipe1",
+          user_id: user.id
+      )
+      recipe_params = {
+        recipe: {
+          title: "Recipe 2",
+          category: "default",
+          dietary_restrictions: "default",
+          rating: 0,
+          description: "Default description",
+          ingredients: ["Ingredient 1", "Ingredient 2", "Ingredient 3"],
+          instructions: ["Step 1", "Step 2", "Step 3"],
+          image: "recipe1",
+          user_id: user.id
+        }
+      }
+      patch "/recipes/#{recipe.id}", params: recipe_params
+
+      expect(response).to have_http_status(200)
+      updated_recipe = Recipe.find(recipe.id)
+      expect(updated_recipe.title).to eq "Recipe 2"
+    end
+    it "doesnt update with a nonexistent id" do
+      user = User.create(email: "test@example.com", username: "test", password: "password")
+      recipe = Recipe.create(
+        title: "Recipe 1",
+          category: "default",
+          dietary_restrictions: "default",
+          rating: 0,
+          description: "Default description",
+          ingredients: ["Ingredient 1", "Ingredient 2", "Ingredient 3"],
+          instructions: ["Step 1", "Step 2", "Step 3"],
+          image: "recipe1",
+          user_id: user.id
+      )
+      recipe_params = {
+        recipe: {
+          title: "",
+          category: "",
+          dietary_restrictions: "",
+          rating: nil,
+          description: "",
+          ingredients: [""],
+          instructions: [""],
+          image: "",
+          user_id: nil
+        }
+      }
+      patch "/recipes/#{recipe.id}", params: recipe_params
+      expect(response).to have_http_status(422)
+    end
+  end
 end
