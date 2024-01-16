@@ -81,6 +81,7 @@ test:
 #
 production:
   <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
   database: mixitup_backend_production
   username: mixitup_backend
   password: <%= ENV["MIXITUP_BACKEND_DATABASE_PASSWORD"] %>
